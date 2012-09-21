@@ -204,6 +204,29 @@ levels.forEach(function (name) {
   }
 });
 
+// Special profile level
+Logger.prototype.profilers = {};
+
+Logger.prototype.profile = function (id) {
+  var now = Date.now(), then, args,
+      msg;
+
+  if (this.profilers[id]) {
+    then = this.profilers[id];
+    delete this.profilers[id];
+
+    // Set the duration property of the metadata
+    msg = now - then + 'ms';
+    var l = this.sub('PROFILE [' + id + ']');
+    return l.info('\u0394 ' + msg);
+  }
+  else {
+    this.profilers[id] = now;
+  }
+
+  return this;
+};
+
 // Generate line logger separately
 Logger.prototype.line = function () {
   var frame = getStack()[1];
